@@ -1,62 +1,54 @@
-/* ============================================
-   DASHBOARD - Project Management & UI Logic
-   ============================================ */
+
 
 let allProjects = [];
 let ownedProjects = [];
 let collaboratedProjects = [];
 
-/* ============================================
-   DOM Elements
-   ============================================ */
+
 
 const elements = {
-    // User elements
+    
     userAvatar: document.getElementById('userAvatar'),
     userName: document.getElementById('userName'),
     logoutBtn: document.getElementById('logoutBtn'),
     upgradeBtn: document.querySelector('.btn-upgrade'),
 
-    // Project elements
+    
     ownedProjectsGrid: document.getElementById('ownedProjects'),
     collaboratedProjectsGrid: document.getElementById('collaboratedProjects'),
     createProjectBtn: document.getElementById('createProjectBtn'),
 
-    // Modal elements
+    
     createProjectModal: document.getElementById('createProjectModal'),
     modalOverlay: document.getElementById('modalOverlay'),
     closeModalBtn: document.getElementById('closeModalBtn'),
     cancelBtn: document.getElementById('cancelBtn'),
     createProjectForm: document.getElementById('createProjectForm'),
 
-    // Form inputs
+    
     projectNameInput: document.getElementById('projectName'),
     projectDescriptionInput: document.getElementById('projectDescription'),
 
-    // Templates
+    
     projectCardTemplate: document.getElementById('projectCardTemplate'),
 };
 
-/* ============================================
-   INITIALIZATION
-   ============================================ */
+
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Initialize the dashboard
+    // Auth check is handled by auth.js constructor
     initializeEventListeners();
     updateUserUI();
     await loadProjects();
 });
 
-/**
- * Initialize event listeners
- */
+
 function initializeEventListeners() {
-    // User actions
+    
     elements.logoutBtn.addEventListener('click', handleLogout);
     elements.upgradeBtn.addEventListener('click', handleUpgrade);
 
-    // Project creation
+    
     elements.createProjectBtn.addEventListener('click', openCreateProjectModal);
     elements.closeModalBtn.addEventListener('click', closeCreateProjectModal);
     elements.cancelBtn.addEventListener('click', closeCreateProjectModal);
@@ -64,85 +56,129 @@ function initializeEventListeners() {
     elements.createProjectForm.addEventListener('submit', handleCreateProject);
 }
 
-/* ============================================
-   USER UI UPDATES
-   ============================================ */
 
-/**
- * Update user interface with current user data
- */
+
+
 function updateUserUI() {
     const user = auth.getCurrentUser();
 
     if (user) {
         elements.userName.textContent = user.name || 'User';
 
-        // Set avatar with user initial
+        
         if (user.name) {
-            elements.userAvatar.textContent = user.name.charAt(0).toUpperCase();
-            elements.userAvatar.style.display = 'none'; // Hide image, use text instead
+            elements.userAvatar.style.display = 'none'; // Background avatar
+            const initialsAvatar = document.createElement('div');
+            initialsAvatar.className = 'avatar-initials';
+            initialsAvatar.textContent = user.name.charAt(0).toUpperCase();
+            elements.userAvatar.parentNode.insertBefore(initialsAvatar, elements.userAvatar);
         }
 
-        // Update upgrade button based on premium status
+        
         if (auth.isPremium()) {
             elements.upgradeBtn.style.display = 'none';
         }
     }
 }
 
-/**
- * Handle logout
- */
+
 function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
         auth.logout();
     }
 }
 
-/**
- * Handle upgrade to premium
- */
-function handleUpgrade() {
-    alert('Premium upgrade feature coming soon!');
-    // TODO: Implement Razorpay payment integration
+
+async function handleUpgrade() {
+    try {
+        const order = await paymentAPI.createOrder('premium');
+        const user = auth.getCurrentUser();
+
+        const options = {
+            key: "rzp_test_SQbXi6hCuzCuDO", 
+            amount: order.amount,
+            currency: order.currency,
+            name: "DevCollab Premium",
+            description: "Upgrade to Premium Plan",
+            order_id: order.id,
+            handler: async function (response) {
+                try {
+                    showLoading();
+                    const verification = await paymentAPI.verifyPayment({
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature
+                    });
+
+                    if (verification.success) {
+                        
+                        user.plan = 'premium';
+                        auth.setUser(user);
+                        updateUserUI();
+                        showSuccess('Welcome to Premium! Your account has been upgraded.');
+                    }
+                } catch (error) {
+                    console.error('Payment verification failed:', error);
+                    showError('Payment verification failed. Please contact support.');
+                }
+            },
+            prefill: {
+                name: user.name,
+                email: user.email
+            },
+            theme: {
+                color: "#6366f1"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+    } catch (error) {
+        console.error('Failed to initiate upgrade:', error);
+        showError('Failed to initiate upgrade. Please try again.');
+    }
 }
 
-/* ============================================
-   PROJECT OPERATIONS
-   ============================================ */
 
-/**
- * Load all projects from API
- */
+
+
 async function loadProjects() {
     try {
         showLoading();
         const response = await projectAPI.getAll();
-        allProjects = response.projects || [];
+        
+        
+        allProjects = Array.isArray(response) ? response : (response.projects || []);
 
-        // Separate owned and collaborated projects
-        const userId = auth.getCurrentUser().id;
+        
+        const userId = auth.getCurrentUser()?.id;
+        if (!userId) {
+            console.warn('No user ID found, auth handles redirection');
+            return;
+        }
+
         ownedProjects = allProjects.filter((p) => p.owner_id === userId);
         collaboratedProjects = allProjects.filter((p) => p.owner_id !== userId);
 
         renderProjects();
     } catch (error) {
         console.error('Failed to load projects:', error);
-        showError('Failed to load projects. Please try again.');
+        
+        if (error.message && error.message.includes('authorized')) {
+            auth.logout();
+        } else {
+            showError('Failed to load projects. Please try again.');
+        }
     }
 }
 
-/**
- * Render projects in the DOM
- */
+
 function renderProjects() {
     renderOwnedProjects();
     renderCollaboratedProjects();
 }
 
-/**
- * Render owned projects
- */
+
 function renderOwnedProjects() {
     elements.ownedProjectsGrid.innerHTML = '';
 
@@ -161,9 +197,7 @@ function renderOwnedProjects() {
     });
 }
 
-/**
- * Render collaborated projects
- */
+
 function renderCollaboratedProjects() {
     elements.collaboratedProjectsGrid.innerHTML = '';
 
@@ -182,28 +216,26 @@ function renderCollaboratedProjects() {
     });
 }
 
-/**
- * Create a project card element from template
- */
+
 function createProjectCard(project) {
     const template = elements.projectCardTemplate.content.cloneNode(true);
 
-    // Set project details
+    
     template.querySelector('.project-name').textContent = project.name;
     template.querySelector('.project-description').textContent =
         project.description || 'No description provided';
 
-    // Set date
+    
     const date = new Date(project.created_at);
     template.querySelector('.project-date').textContent = `Created ${date.toLocaleDateString()}`;
     template.querySelector('.project-date').setAttribute('data-date', project.created_at);
 
-    // Set stats (these would come from actual data)
+    
     template.querySelector('[data-type="openTasks"]').textContent = project.openTasks || 0;
     template.querySelector('[data-type="collaborators"]').textContent =
         project.collaboratorCount || 0;
 
-    // Add collaborator avatars
+    
     const avatarsContainer = template.querySelector('.collaborators-avatars');
     if (project.collaborators && project.collaborators.length > 0) {
         project.collaborators.slice(0, 3).forEach((collab) => {
@@ -223,7 +255,7 @@ function createProjectCard(project) {
         }
     }
 
-    // Add event listeners
+    
     const card = template.querySelector('.project-card');
     card.addEventListener('click', (e) => handleOpenProject(e, project));
 
@@ -253,7 +285,7 @@ function createProjectCard(project) {
         handleDeleteProject(e, project);
     });
 
-    // Close dropdown when clicking elsewhere
+    
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.project-menu')) {
             dropdown.classList.add('hidden');
@@ -263,36 +295,28 @@ function createProjectCard(project) {
     return template;
 }
 
-/**
- * Toggle dropdown menu
- */
+
 function toggleDropdown(dropdown) {
     dropdown.classList.toggle('hidden');
 }
 
-/**
- * Handle opening a project
- */
+
 function handleOpenProject(event, project) {
     event.stopPropagation();
-    // TODO: Navigate to project workspace
+    
     console.log('Opening project:', project);
-    window.location.href = `/project.html?id=${project.id}`;
+    window.location.href = `project.html?id=${project.id}`;
 }
 
-/**
- * Handle editing a project
- */
+
 function handleEditProject(event, project) {
     event.stopPropagation();
     console.log('Editing project:', project);
-    // TODO: Open edit modal
+    
     alert('Edit project feature coming soon');
 }
 
-/**
- * Handle deleting a project
- */
+
 async function handleDeleteProject(event, project) {
     event.stopPropagation();
 
@@ -311,21 +335,15 @@ async function handleDeleteProject(event, project) {
     }
 }
 
-/* ============================================
-   CREATE PROJECT MODAL
-   ============================================ */
 
-/**
- * Open create project modal
- */
+
+
 function openCreateProjectModal() {
     elements.createProjectModal.classList.remove('hidden');
     elements.projectNameInput.focus();
 }
 
-/**
- * Close create project modal
- */
+
 function closeCreateProjectModal(event) {
     if (event && event.target !== elements.modalOverlay && event.target !== elements.closeModalBtn && event.target !== elements.cancelBtn) {
         return;
@@ -334,9 +352,7 @@ function closeCreateProjectModal(event) {
     elements.createProjectForm.reset();
 }
 
-/**
- * Handle create project form submission
- */
+
 async function handleCreateProject(event) {
     event.preventDefault();
 
@@ -363,32 +379,24 @@ async function handleCreateProject(event) {
     }
 }
 
-/* ============================================
-   UTILITY FUNCTIONS
-   ============================================ */
 
-/**
- * Show loading state
- */
+
+
 function showLoading() {
-    // TODO: Implement loading indicator
+    
     console.log('Loading...');
 }
 
-/**
- * Show success notification
- */
+
 function showSuccess(message) {
     console.log('Success:', message);
-    // TODO: Implement toast notification
+    
     alert(message);
 }
 
-/**
- * Show error notification
- */
+
 function showError(message) {
     console.error('Error:', message);
-    // TODO: Implement toast notification
+    
     alert('Error: ' + message);
 }

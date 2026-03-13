@@ -21,12 +21,6 @@ const authElements = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if already logged in
-    if (auth.isLoggedIn()) {
-        window.location.href = '/dashboard.html';
-        return;
-    }
-
     initializeEventListeners();
 });
 
@@ -171,7 +165,7 @@ async function handleLoginSubmit(e) {
 
         showSuccess('login', 'Login successful! Redirecting...');
         setTimeout(() => {
-            window.location.href = '/dashboard.html';
+            auth.checkRedirection();
         }, 1500);
     } catch (error) {
         console.error('Login error:', error);
@@ -208,7 +202,7 @@ async function handleSignupSubmit(e) {
         showSuccess('signup', 'Account created successfully! Redirecting to dashboard...');
 
         setTimeout(() => {
-            window.location.href = '/dashboard.html';
+            auth.checkRedirection();
         }, 1500);
     } catch (error) {
         console.error('Signup error:', error);

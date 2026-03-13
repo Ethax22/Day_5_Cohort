@@ -30,6 +30,11 @@ class User {
     const [result] = await db.execute(query, [name, email, passwordHash]);
     return result.insertId;
   }
+
+  static async updatePlan(userId, plan) {
+    const query = 'UPDATE Users SET plan = ? WHERE id = ?';
+    await db.execute(query, [plan, userId]);
+  }
 }
 
 User.createTable().catch(console.error);

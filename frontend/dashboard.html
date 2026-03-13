@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
-    <!-- Navbar -->
+    
     <nav class="navbar">
         <div class="navbar-container">
             <div class="navbar-left">
@@ -25,9 +25,9 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
+    
     <main class="dashboard-container">
-        <!-- Dashboard Header -->
+        
         <section class="dashboard-header">
             <div class="header-content">
                 <h2>My Projects</h2>
@@ -36,22 +36,22 @@
             <button id="createProjectBtn" class="btn-create-project">+ New Project</button>
         </section>
 
-        <!-- Own Projects Section -->
+        
         <section class="projects-section">
             <h3 class="section-title">Owned Projects</h3>
             <div class="projects-grid" id="ownedProjects">
-                <!-- Project cards will be rendered here by dashboard.js -->
+                
                 <div class="project-card-empty">
                     <p>No owned projects yet. Create one to get started!</p>
                 </div>
             </div>
         </section>
 
-        <!-- Collaborated Projects Section -->
+        
         <section class="projects-section">
             <h3 class="section-title">Collaborated Projects</h3>
             <div class="projects-grid" id="collaboratedProjects">
-                <!-- Project cards will be rendered here by dashboard.js -->
+                
                 <div class="project-card-empty">
                     <p>You haven't been invited to any projects yet.</p>
                 </div>
@@ -59,7 +59,7 @@
         </section>
     </main>
 
-    <!-- Create Project Modal -->
+    
     <div id="createProjectModal" class="modal hidden">
         <div class="modal-overlay" id="modalOverlay"></div>
         <div class="modal-content">
@@ -84,7 +84,7 @@
         </div>
     </div>
 
-    <!-- Project Card Template (Hidden) -->
+    
     <template id="projectCardTemplate">
         <div class="project-card">
             <div class="project-card-header">
@@ -111,14 +111,15 @@
             </div>
             <div class="project-footer">
                 <div class="collaborators-avatars">
-                    <!-- Collaborator avatars will be added here -->
+                    
                 </div>
                 <span class="project-date" data-date=""></span>
             </div>
         </div>
     </template>
 
-    <!-- JavaScript Files -->
+    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>

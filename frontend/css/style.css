@@ -353,3 +353,18 @@ label {
         font-size: 1.1rem;
     }
 }
+
+/* Avatar Initials */
+.avatar-initials {
+    width: 40px;
+    height: 40px;
+    background: var(--color-accent-primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 1.2rem;
+    box-shadow: var(--shadow-md);
+}

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/board.css">
 </head>
 <body>
-    <!-- Navbar -->
+    
     <nav class="navbar">
         <div class="navbar-container">
             <div class="navbar-left">
@@ -25,9 +25,9 @@
         </div>
     </nav>
 
-    <!-- Main Container -->
+    
     <main class="workspace-container">
-        <!-- Sidebar Navigation -->
+        
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h3>Project Menu</h3>
@@ -52,15 +52,15 @@
                 <div class="project-info">
                     <p class="info-label">Active Collaborators</p>
                     <div id="activeUsers" class="active-users">
-                        <!-- Active users will be added here -->
+                        
                     </div>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
+        
         <div class="content-area">
-            <!-- Task Board Tab -->
+            
             <section id="board" class="tab-content active">
                 <div class="board-header">
                     <h2>Task Board</h2>
@@ -70,55 +70,55 @@
                     </div>
                 </div>
 
-                <!-- Kanban Board -->
+                
                 <div class="kanban-board">
-                    <!-- To Do Column -->
+                    
                     <div class="kanban-column" data-status="todo">
                         <div class="column-header">
                             <h3>📝 To Do</h3>
                             <span class="task-count" data-count="0">0</span>
                         </div>
                         <div class="tasks-container" data-status="todo">
-                            <!-- Task cards will be rendered here -->
+                            
                         </div>
                     </div>
 
-                    <!-- In Progress Column -->
+                    
                     <div class="kanban-column" data-status="in-progress">
                         <div class="column-header">
                             <h3>🚀 In Progress</h3>
                             <span class="task-count" data-count="0">0</span>
                         </div>
                         <div class="tasks-container" data-status="in-progress">
-                            <!-- Task cards will be rendered here -->
+                            
                         </div>
                     </div>
 
-                    <!-- Review Column -->
+                    
                     <div class="kanban-column" data-status="review">
                         <div class="column-header">
                             <h3>👀 Review</h3>
                             <span class="task-count" data-count="0">0</span>
                         </div>
                         <div class="tasks-container" data-status="review">
-                            <!-- Task cards will be rendered here -->
+                            
                         </div>
                     </div>
 
-                    <!-- Done Column -->
+                    
                     <div class="kanban-column" data-status="done">
                         <div class="column-header">
                             <h3>✅ Done</h3>
                             <span class="task-count" data-count="0">0</span>
                         </div>
                         <div class="tasks-container" data-status="done">
-                            <!-- Task cards will be rendered here -->
+                            
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Discussions/Chat Tab -->
+            
             <section id="chat" class="tab-content">
                 <div class="chat-header">
                     <h2>Code Discussions</h2>
@@ -126,12 +126,12 @@
                 </div>
 
                 <div class="chat-container">
-                    <!-- Chat Messages -->
+                    
                     <div id="messagesContainer" class="messages-container">
-                        <!-- Messages will be appended here -->
+                        
                     </div>
 
-                    <!-- Chat Input -->
+                    
                     <div class="chat-input-area">
                         <form id="chatForm" class="chat-form">
                             <textarea
@@ -150,7 +150,7 @@
                     </div>
                 </div>
 
-                <!-- Code Snippet Modal -->
+                
                 <div id="codeSnippetModal" class="modal hidden">
                     <div class="modal-overlay" id="snippetOverlay"></div>
                     <div class="modal-content">
@@ -191,16 +191,49 @@
                         </form>
                     </div>
                 </div>
+
+                <!-- Add Task Modal -->
+                <div id="addTaskModal" class="modal hidden">
+                    <div class="modal-overlay" id="addTaskOverlay"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Add New Task</h3>
+                            <button id="closeAddTaskModal" class="btn-close">&times;</button>
+                        </div>
+                        <form id="addTaskForm" class="modal-form">
+                            <div class="form-group">
+                                <label for="taskTitle">Task Title</label>
+                                <input type="text" id="taskTitle" name="title" placeholder="What needs to be done?" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="taskDescription">Description</label>
+                                <textarea id="taskDescription" name="description" placeholder="Add more details..." rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="taskPriority">Priority</label>
+                                <select id="taskPriority" name="priority">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" id="cancelAddTaskBtn" class="btn-secondary">Cancel</button>
+                                <button type="submit" class="btn-primary">Create Task</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </section>
 
-            <!-- Settings Tab -->
+            
             <section id="settings" class="tab-content">
                 <div class="settings-header">
                     <h2>Project Settings</h2>
                 </div>
 
                 <div class="settings-container">
-                    <!-- Project Details -->
+                    
                     <div class="settings-section">
                         <h3>Project Details</h3>
                         <div class="settings-form">
@@ -216,11 +249,11 @@
                         </div>
                     </div>
 
-                    <!-- Collaborators Management -->
+                    
                     <div class="settings-section">
                         <h3>Collaborators</h3>
 
-                        <!-- Add Collaborator -->
+                        
                         <div class="add-collaborator">
                             <div class="form-group">
                                 <label for="collaboratorEmail">Add Collaborator by Email</label>
@@ -237,16 +270,16 @@
                             </div>
                         </div>
 
-                        <!-- Collaborators List -->
+                        
                         <div class="collaborators-list">
                             <h4>Team Members</h4>
                             <div id="collaboratorsList" class="list">
-                                <!-- Collaborators will be listed here -->
+                                
                             </div>
                         </div>
                     </div>
 
-                    <!-- Danger Zone -->
+                    
                     <div class="settings-section danger-zone">
                         <h3>Danger Zone</h3>
                         <p>These actions are permanent and cannot be undone.</p>
@@ -259,7 +292,7 @@
         </div>
     </main>
 
-    <!-- Task Card Template -->
+    
     <template id="taskCardTemplate">
         <div class="task-card" draggable="true">
             <div class="task-header">
@@ -277,7 +310,7 @@
         </div>
     </template>
 
-    <!-- Message Template -->
+    
     <template id="messageTemplate">
         <div class="message">
             <div class="message-avatar">
@@ -293,7 +326,7 @@
         </div>
     </template>
 
-    <!-- Collaborator Item Template -->
+    
     <template id="collaboratorTemplate">
         <div class="collaborator-item">
             <div class="collaborator-info">
@@ -307,7 +340,7 @@
         </div>
     </template>
 
-    <!-- JavaScript Files -->
+    
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>

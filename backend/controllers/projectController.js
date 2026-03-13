@@ -1,7 +1,5 @@
 const Project = require('../models/projectModel');
 
-// @desc    Create a new project
-// @route   POST /api/projects
 const createProject = async (req, res) => {
     const { name, description } = req.body;
 
@@ -18,8 +16,20 @@ const createProject = async (req, res) => {
     }
 };
 
-// @desc    Get all projects for the logged in user
-// @route   GET /api/projects
+
+const getProjectById = async (req, res) => {
+    try {
+        const project = await Project.findById(req.params.projectId);
+        if (!project) {
+            return res.status(404).json({ message: "Project not found" });
+        }
+        res.json({ project });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching project" });
+    }
+};
+
 const getProjects = async (req, res) => {
     try {
         const projects = await Project.findByUser(req.user.id);
@@ -30,4 +40,4 @@ const getProjects = async (req, res) => {
     }
 };
 
-module.exports = { createProject, getProjects };
+module.exports = { createProject, getProjects, getProjectById };

@@ -60,6 +60,12 @@ class Project {
         const [rows] = await db.execute(query, [userId]);
         return rows;
     }
+
+    static async findById(id) {
+        const query = 'SELECT * FROM Projects WHERE id = ?';
+        const [rows] = await db.execute(query, [id]);
+        return rows[0];
+    }
 }
 
 Project.createTables().catch(console.error);

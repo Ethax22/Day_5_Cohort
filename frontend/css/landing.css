@@ -451,7 +451,7 @@
 
 .badge {
     position: absolute;
-    top: -12px;
+    top: -16px; /* Adjusted to sit half-in and half-out of the border */
     left: 50%;
     transform: translateX(-50%);
     background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
@@ -461,6 +461,7 @@
     font-size: 0.85rem;
     font-weight: 600;
     box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+    z-index: 10;
 }
 
 .plan-name {

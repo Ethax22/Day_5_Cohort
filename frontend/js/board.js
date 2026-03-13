@@ -1,6 +1,4 @@
-/* ============================================
-   PROJECT WORKSPACE - BOARD LOGIC
-   ============================================ */
+
 
 let currentProject = null;
 let tasks = [];
@@ -8,29 +6,32 @@ let messages = [];
 let collaborators = [];
 let activeUsers = [];
 
-/* ============================================
-   DOM ELEMENTS
-   ============================================ */
+
 
 const boardElements = {
-    // Sidebar
+    
     navItems: document.querySelectorAll('.nav-item'),
     activeUsersContainer: document.getElementById('activeUsers'),
 
-    // Navbar
+    
     projectTitle: document.getElementById('projectTitle'),
     backBtn: document.querySelector('.back-btn'),
     userAvatar: document.getElementById('userAvatar'),
     userName: document.getElementById('userName'),
     logoutBtn: document.getElementById('logoutBtn'),
 
-    // Board
+    
     kanbanBoard: document.querySelector('.kanban-board'),
     tasksContainers: document.querySelectorAll('.tasks-container'),
     addTaskBtn: document.getElementById('addTaskBtn'),
     filterBtn: document.getElementById('filterBtn'),
+    addTaskModal: document.getElementById('addTaskModal'),
+    addTaskForm: document.getElementById('addTaskForm'),
+    closeAddTaskModal: document.getElementById('closeAddTaskModal'),
+    cancelAddTaskBtn: document.getElementById('cancelAddTaskBtn'),
+    addTaskOverlay: document.getElementById('addTaskOverlay'),
 
-    // Chat
+    
     messagesContainer: document.getElementById('messagesContainer'),
     chatForm: document.getElementById('chatForm'),
     messageInput: document.getElementById('messageInput'),
@@ -40,7 +41,7 @@ const boardElements = {
     closeSnippetModal: document.getElementById('closeSnippetModal'),
     snippetOverlay: document.getElementById('snippetOverlay'),
 
-    // Settings
+    
     settingsProjectName: document.getElementById('settingsProjectName'),
     settingsDescription: document.getElementById('settingsDescription'),
     collaboratorEmail: document.getElementById('collaboratorEmail'),
@@ -48,23 +49,20 @@ const boardElements = {
     collaboratorsList: document.getElementById('collaboratorsList'),
     deleteProjectBtn: document.getElementById('deleteProjectBtn'),
 
-    // Templates
+    
     taskCardTemplate: document.getElementById('taskCardTemplate'),
     messageTemplate: document.getElementById('messageTemplate'),
     collaboratorTemplate: document.getElementById('collaboratorTemplate'),
 };
 
-/* ============================================
-   INITIALIZATION
-   ============================================ */
+
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // Get project ID from URL
+    
     const projectId = new URLSearchParams(window.location.search).get('id');
 
     if (!projectId) {
         alert('No project selected');
-        window.location.href = '/dashboard.html';
         return;
     }
 
@@ -78,52 +76,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         connectWebSocket(projectId);
     } catch (error) {
         console.error('Failed to initialize workspace:', error);
-        alert('Failed to load project. Redirecting...');
-        window.location.href = '/dashboard.html';
+        alert('Failed to load project.');
     }
 });
 
-/**
- * Initialize event listeners
- */
+
 function initializeEventListeners() {
-    // Tab switching
+    
     boardElements.navItems.forEach((item) => {
         item.addEventListener('click', handleTabSwitch);
     });
 
-    // Board actions
+    
     boardElements.addTaskBtn.addEventListener('click', openAddTaskModal);
     boardElements.filterBtn.addEventListener('click', handleFilter);
 
-    // Drag and drop
+    
     boardElements.tasksContainers.forEach((container) => {
         container.addEventListener('dragover', handleDragOver);
         container.addEventListener('drop', handleDrop);
         container.addEventListener('dragleave', handleDragLeave);
     });
 
-    // Chat
+    
     boardElements.chatForm.addEventListener('submit', handleChatSubmit);
     boardElements.codeSnippetBtn.addEventListener('click', openCodeSnippetModal);
     boardElements.closeSnippetModal.addEventListener('click', closeCodeSnippetModal);
     boardElements.snippetOverlay.addEventListener('click', closeCodeSnippetModal);
     boardElements.codeSnippetForm.addEventListener('submit', handleCodeSnippetSubmit);
 
-    // Settings
+    
+    boardElements.addTaskBtn.addEventListener('click', openAddTaskModal);
+    boardElements.closeAddTaskModal.addEventListener('click', closeAddTaskModal);
+    boardElements.cancelAddTaskBtn.addEventListener('click', closeAddTaskModal);
+    boardElements.addTaskOverlay.addEventListener('click', closeAddTaskModal);
+    boardElements.addTaskForm.addEventListener('submit', handleAddTaskSubmit);
+
+    
     boardElements.addCollaboratorBtn.addEventListener('click', handleAddCollaborator);
     boardElements.deleteProjectBtn.addEventListener('click', handleDeleteProject);
 
-    // User
+    
     boardElements.backBtn.addEventListener('click', () => {
-        window.location.href = '/dashboard.html';
+        window.location.href = 'dashboard.html';
     });
     boardElements.logoutBtn.addEventListener('click', handleLogout);
 }
 
-/**
- * Update user UI
- */
+
 function updateUserUI() {
     const user = auth.getCurrentUser();
     if (user) {
@@ -135,27 +135,23 @@ function updateUserUI() {
     }
 }
 
-/* ============================================
-   TAB MANAGEMENT
-   ============================================ */
 
-/**
- * Handle tab switching
- */
+
+
 function handleTabSwitch(e) {
     const targetTab = e.currentTarget.getAttribute('data-tab');
 
-    // Update nav items
+    
     boardElements.navItems.forEach((item) => {
         item.classList.toggle('active', item.getAttribute('data-tab') === targetTab);
     });
 
-    // Update tab contents
+    
     document.querySelectorAll('.tab-content').forEach((content) => {
         content.classList.toggle('active', content.id === targetTab);
     });
 
-    // Scroll chat to bottom if switching to chat
+    
     if (targetTab === 'chat') {
         setTimeout(() => {
             boardElements.messagesContainer.scrollTop = boardElements.messagesContainer.scrollHeight;
@@ -163,13 +159,9 @@ function handleTabSwitch(e) {
     }
 }
 
-/* ============================================
-   PROJECT MANAGEMENT
-   ============================================ */
 
-/**
- * Load project data
- */
+
+
 async function loadProject(projectId) {
     try {
         const response = await projectAPI.getById(projectId);
@@ -183,9 +175,7 @@ async function loadProject(projectId) {
     }
 }
 
-/**
- * Load project tasks
- */
+
 async function loadTasks(projectId) {
     try {
         const response = await taskAPI.getAll(projectId);
@@ -196,16 +186,14 @@ async function loadTasks(projectId) {
     }
 }
 
-/**
- * Render tasks on the board
- */
+
 function renderTasks() {
-    // Clear all containers
+    
     boardElements.tasksContainers.forEach((container) => {
         container.innerHTML = '';
     });
 
-    // Group tasks by status
+    
     const tasksByStatus = {
         todo: [],
         'in-progress': [],
@@ -219,22 +207,22 @@ function renderTasks() {
         }
     });
 
-    // Render tasks in each column
+    
     Object.keys(tasksByStatus).forEach((status) => {
         const container = document.querySelector(`.tasks-container[data-status="${status}"]`);
         const statusTasks = tasksByStatus[status];
 
-        // Update task count
+        
         const column = document.querySelector(`.kanban-column[data-status="${status}"]`);
         column.querySelector('.task-count').textContent = statusTasks.length;
 
-        // Render task cards
+        
         statusTasks.forEach((task) => {
             const taskCard = createTaskCard(task);
             container.appendChild(taskCard);
         });
 
-        // Show empty state if no tasks
+        
         if (statusTasks.length === 0) {
             const emptyDiv = document.createElement('div');
             emptyDiv.className = 'empty-column-state';
@@ -246,27 +234,24 @@ function renderTasks() {
     });
 }
 
-/**
- * Create a task card element
- */
+
 function createTaskCard(task) {
     const template = boardElements.taskCardTemplate.content.cloneNode(true);
 
     template.querySelector('.task-title').textContent = task.title;
     template.querySelector('.task-description').textContent = task.description || 'No description';
 
-    // Set assignee
-    if (task.assignee) {
-        template.querySelector('.assignee-avatar').style.backgroundColor = task.assignee.color || '#6366F1';
-        template.querySelector('.assignee-name').textContent = task.assignee.name.substring(0, 10);
-    }
+    
+    const assigneeName = task.assignee_name || 'Unassigned';
+    template.querySelector('.assignee-avatar').style.backgroundColor = '#6366F1';
+    template.querySelector('.assignee-name').textContent = assigneeName.substring(0, 10);
 
-    // Set priority
+    
     const priorityElement = template.querySelector('.task-priority');
     priorityElement.className = `task-priority ${task.priority || 'low'}`;
     priorityElement.textContent = (task.priority || 'low').toUpperCase();
 
-    // Add drag functionality
+    
     const card = template.querySelector('.task-card');
     card.setAttribute('draggable', 'true');
     card.setAttribute('data-task-id', task.id);
@@ -278,24 +263,18 @@ function createTaskCard(task) {
     return template;
 }
 
-/* ============================================
-   DRAG AND DROP
-   ============================================ */
+
 
 let draggedTaskId = null;
 
-/**
- * Handle drag start
- */
+
 function handleDragStart(e) {
     draggedTaskId = e.target.getAttribute('data-task-id');
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
 }
 
-/**
- * Handle drag end
- */
+
 function handleDragEnd(e) {
     e.target.classList.remove('dragging');
     boardElements.tasksContainers.forEach((container) => {
@@ -303,27 +282,21 @@ function handleDragEnd(e) {
     });
 }
 
-/**
- * Handle drag over
- */
+
 function handleDragOver(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
     e.currentTarget.classList.add('drag-over');
 }
 
-/**
- * Handle drag leave
- */
+
 function handleDragLeave(e) {
     if (e.currentTarget === e.target) {
         e.currentTarget.classList.remove('drag-over');
     }
 }
 
-/**
- * Handle drop
- */
+
 async function handleDrop(e) {
     e.preventDefault();
     e.currentTarget.classList.remove('drag-over');
@@ -341,20 +314,18 @@ async function handleDrop(e) {
     draggedTaskId = null;
 }
 
-/**
- * Update task status
- */
+
 async function updateTaskStatus(taskId, newStatus) {
     try {
         await taskAPI.updateStatus(currentProject.id, taskId, newStatus);
 
-        // Update local tasks array
+        
         const task = tasks.find((t) => t.id === parseInt(taskId));
         if (task) {
             task.status = newStatus;
             renderTasks();
 
-            // Notify via WebSocket
+            
             if (socket && socket.connected) {
                 socket.emit('task:update', {
                     taskId,
@@ -369,41 +340,62 @@ async function updateTaskStatus(taskId, newStatus) {
     }
 }
 
-/* ============================================
-   TASK MANAGEMENT
-   ============================================ */
 
-/**
- * Open add task modal
- */
+
+
 function openAddTaskModal() {
-    console.log('Add task modal - coming soon');
-    alert('Add task feature coming soon');
+    boardElements.addTaskModal.classList.remove('hidden');
+    document.getElementById('taskTitle').focus();
 }
 
-/**
- * Open task details
- */
+
+function closeAddTaskModal(e) {
+    if (e && e.target !== boardElements.addTaskOverlay && e.target !== boardElements.closeAddTaskModal && e.target !== boardElements.cancelAddTaskBtn) {
+        return;
+    }
+    boardElements.addTaskModal.classList.add('hidden');
+    boardElements.addTaskForm.reset();
+}
+
+
+async function handleAddTaskSubmit(e) {
+    e.preventDefault();
+
+    const title = document.getElementById('taskTitle').value.trim();
+    const description = document.getElementById('taskDescription').value.trim();
+    const priority = document.getElementById('taskPriority').value;
+
+    if (!title) return;
+
+    try {
+        const projectId = new URLSearchParams(window.location.search).get('id');
+        const response = await taskAPI.create(projectId, title, description, priority);
+        
+        // Add new task to local state and re-render
+        tasks.push(response);
+        renderTasks();
+        closeAddTaskModal({ target: boardElements.closeAddTaskModal });
+    } catch (error) {
+        console.error('Failed to create task:', error);
+        alert('Failed to create task');
+    }
+}
+
+
 function openTaskDetails(task) {
     console.log('Task details:', task);
     alert(`Task: ${task.title}\n\nFull details view coming soon`);
 }
 
-/**
- * Handle filter
- */
+
 function handleFilter() {
     console.log('Filter - coming soon');
     alert('Filter feature coming soon');
 }
 
-/* ============================================
-   CHAT/MESSAGES
-   ============================================ */
 
-/**
- * Load messages from API
- */
+
+
 async function loadMessages(projectId) {
     try {
         const response = await messageAPI.getAll(projectId);
@@ -414,9 +406,7 @@ async function loadMessages(projectId) {
     }
 }
 
-/**
- * Render messages
- */
+
 function renderMessages() {
     boardElements.messagesContainer.innerHTML = '';
     const currentUser = auth.getCurrentUser();
@@ -435,13 +425,11 @@ function renderMessages() {
         boardElements.messagesContainer.appendChild(messageEl);
     });
 
-    // Scroll to bottom
+    
     boardElements.messagesContainer.scrollTop = boardElements.messagesContainer.scrollHeight;
 }
 
-/**
- * Create message element
- */
+
 function createMessageElement(message, currentUserId) {
     const template = boardElements.messageTemplate.content.cloneNode(true);
 
@@ -450,13 +438,13 @@ function createMessageElement(message, currentUserId) {
         messageDiv.classList.add('own');
     }
 
-    template.querySelector('.message-avatar img').src = message.sender?.avatar || 'public/default-avatar.svg';
-    template.querySelector('.message-author').textContent = message.sender?.name || 'Unknown';
+    template.querySelector('.message-avatar img').src = 'public/default-avatar.svg';
+    template.querySelector('.message-author').textContent = message.sender_name || 'Unknown';
 
     const date = new Date(message.created_at);
     template.querySelector('.message-time').textContent = date.toLocaleTimeString();
 
-    // Handle different message types
+    
     if (message.type === 'code') {
         const codeHtml = `
             <div class="message-code">
@@ -472,9 +460,7 @@ function createMessageElement(message, currentUserId) {
     return template;
 }
 
-/**
- * Handle chat form submit
- */
+
 async function handleChatSubmit(e) {
     e.preventDefault();
 
@@ -490,7 +476,7 @@ async function handleChatSubmit(e) {
         renderMessages();
         boardElements.messageInput.value = '';
 
-        // Emit via WebSocket
+        
         if (socket && socket.connected) {
             socket.emit('message:send', {
                 projectId: currentProject.id,
@@ -504,18 +490,14 @@ async function handleChatSubmit(e) {
     }
 }
 
-/**
- * Open code snippet modal
- */
+
 function openCodeSnippetModal(e) {
     e.preventDefault();
     boardElements.codeSnippetModal.classList.remove('hidden');
     document.getElementById('codeLanguage').focus();
 }
 
-/**
- * Close code snippet modal
- */
+
 function closeCodeSnippetModal(e) {
     if (e && e.target !== boardElements.snippetOverlay && e.target !== boardElements.closeSnippetModal) {
         return;
@@ -524,9 +506,7 @@ function closeCodeSnippetModal(e) {
     boardElements.codeSnippetForm.reset();
 }
 
-/**
- * Handle code snippet submit
- */
+
 async function handleCodeSnippetSubmit(e) {
     e.preventDefault();
 
@@ -547,7 +527,7 @@ async function handleCodeSnippetSubmit(e) {
         renderMessages();
         closeCodeSnippetModal({ target: boardElements.closeSnippetModal });
 
-        // Emit via WebSocket
+        
         if (socket && socket.connected) {
             socket.emit('message:send', {
                 projectId: currentProject.id,
@@ -562,13 +542,9 @@ async function handleCodeSnippetSubmit(e) {
     }
 }
 
-/* ============================================
-   COLLABORATORS & SETTINGS
-   ============================================ */
 
-/**
- * Load collaborators
- */
+
+
 async function loadCollaborators(projectId) {
     try {
         const response = await projectAPI.getCollaborators(projectId);
@@ -579,9 +555,7 @@ async function loadCollaborators(projectId) {
     }
 }
 
-/**
- * Render collaborators list
- */
+
 function renderCollaborators() {
     boardElements.collaboratorsList.innerHTML = '';
 
@@ -600,9 +574,7 @@ function renderCollaborators() {
     });
 }
 
-/**
- * Handle add collaborator
- */
+
 async function handleAddCollaborator() {
     const email = boardElements.collaboratorEmail.value.trim();
 
@@ -612,7 +584,7 @@ async function handleAddCollaborator() {
     }
 
     try {
-        // TODO: Implement adding collaborator by email
+        
         alert('Add collaborator feature coming soon');
     } catch (error) {
         console.error('Failed to add collaborator:', error);
@@ -620,9 +592,7 @@ async function handleAddCollaborator() {
     }
 }
 
-/**
- * Handle remove collaborator
- */
+
 async function handleRemoveCollaborator(userId) {
     if (!confirm('Are you sure you want to remove this collaborator?')) {
         return;
@@ -637,9 +607,7 @@ async function handleRemoveCollaborator(userId) {
     }
 }
 
-/**
- * Handle delete project
- */
+
 async function handleDeleteProject() {
     if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
         return;
@@ -651,29 +619,23 @@ async function handleDeleteProject() {
 
     try {
         await projectAPI.delete(currentProject.id);
-        window.location.href = '/dashboard.html';
+        window.location.href = 'dashboard.html';
     } catch (error) {
         console.error('Failed to delete project:', error);
         alert('Failed to delete project');
     }
 }
 
-/**
- * Handle logout
- */
+
 function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
         auth.logout();
     }
 }
 
-/* ============================================
-   UTILITIES
-   ============================================ */
 
-/**
- * Escape HTML special characters
- */
+
+
 function escapeHtml(text) {
     const map = {
         '&': '&amp;',
@@ -685,16 +647,12 @@ function escapeHtml(text) {
     return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-/**
- * Format time
- */
+
 function formatTime(date) {
     return new Date(date).toLocaleTimeString();
 }
 
-/**
- * Update active users
- */
+
 function updateActiveUsers(users) {
     activeUsers = users;
     boardElements.activeUsersContainer.innerHTML = '';

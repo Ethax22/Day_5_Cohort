@@ -22,6 +22,7 @@ app.use(express.json());
 
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/projects/:projectId/messages', require('./routes/messageRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 
 
@@ -30,14 +31,23 @@ io.on('connection', (socket) => {
   console.log('User connected via WebSocket:', socket.id);
 
 
-  socket.on('join_project', (projectId) => {
-    socket.join(`project_${projectId}`);
-    console.log(`User joined project room: ${projectId}`);
+  socket.on('project:join', (data) => {
+    socket.join(`project_${data.projectId}`);
+    console.log(`User ${data.userName} joined project room: ${data.projectId}`);
+    socket.to(`project_${data.projectId}`).emit('user:joined', data);
   });
 
+  socket.on('task:update', (data) => {
+    socket.to(`project_${data.projectId}`).emit('task:updated', {
+      taskId: data.taskId,
+      newStatus: data.newStatus
+    });
+  });
 
-  socket.on('task_moved', (data) => {
-    socket.to(`project_${data.projectId}`).emit('update_board', data);
+  socket.on('message:send', (data) => {
+    socket.to(`project_${data.projectId}`).emit('message:received', {
+      message: data
+    });
   });
 
   socket.on('disconnect', () => {

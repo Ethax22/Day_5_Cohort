@@ -1,12 +1,19 @@
 const Task = require('../models/taskModel');
 
 const createTask = async (req, res) => {
-    const { title } = req.body;
-    const { projectId } = req.params; // Expects ID attached in URL e.g. /projects/1/tasks
+    const { title, description, priority, assigneeId } = req.body;
+    const { projectId } = req.params;
 
     try {
-        const taskId = await Task.create(projectId, title);
-        res.status(201).json({ id: taskId, title, status: 'todo' });
+        const taskId = await Task.create(projectId, title, description, 'todo', priority, assigneeId);
+        res.status(201).json({ 
+            id: taskId, 
+            title, 
+            description, 
+            status: 'todo', 
+            priority: priority || 'medium',
+            assignee_id: assigneeId 
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error creating task" });
