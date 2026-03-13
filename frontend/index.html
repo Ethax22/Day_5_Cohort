@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevCollab - Real-time Developer Collaboration Platform</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/landing.css">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-landing">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <h1 class="logo">DevCollab</h1>
+            </div>
+            <div class="navbar-right">
+                <a href="login.html" class="btn-secondary btn-sm">Login</a>
+                <a href="login.html" class="btn-primary btn-sm">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Collaborate. Build. Ship.
+                    <span class="gradient-text">Faster.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Real-time project collaboration platform designed for developers. Manage tasks,
+                    discuss code, and ship projects together seamlessly.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="login.html" class="btn-primary btn-lg pulse">Start Free Trial</a>
+                    <a href="#features" class="btn-secondary btn-lg">Learn More</a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Developers</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">5K+</span>
+                        <span class="stat-label">Projects</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">99.9%</span>
+                        <span class="stat-label">Uptime</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-card card-1">
+                    <div class="card-header">📋 Task Board</div>
+                    <div class="card-content">Real-time Kanban management</div>
+                </div>
+                <div class="hero-card card-2">
+                    <div class="card-header">💬 Discussions</div>
+                    <div class="card-content">Code snippets & ideas</div>
+                </div>
+                <div class="hero-card card-3">
+                    <div class="card-header">⚡ Instant Sync</div>
+                    <div class="card-content">WebSocket powered</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Why DevCollab?</h2>
+                <p>Everything you need for seamless team collaboration</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Smart Task Boards</h3>
+                    <p>
+                        Kanban-style project management with drag-and-drop tasks. Keep your team
+                        organized with To Do, In Progress, Review, and Done columns.
+                    </p>
+                    <ul class="feature-list">
+                        <li>Drag-and-drop tasks</li>
+                        <li>Real-time updates</li>
+                        <li>Priority tags</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Code Discussions</h3>
+                    <p>
+                        Share code snippets, ask questions, and discuss implementation details
+                        directly in your project workspace.
+                    </p>
+                    <ul class="feature-list">
+                        <li>Code syntax highlighting</li>
+                        <li>Multi-language support</li>
+                        <li>Instant notifications</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Team Collaboration</h3>
+                    <p>
+                        Invite team members, manage permissions, and work together in real-time.
+                        See who's online and active on your projects.
+                    </p>
+                    <ul class="feature-list">
+                        <li>Invite collaborators</li>
+                        <li>User presence</li>
+                        <li>Activity tracking</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>
+                        WebSocket-powered real-time synchronization. Every change is instantly
+                        visible to your entire team without page refreshes.
+                    </p>
+                    <ul class="feature-list">
+                        <li>WebSocket powered</li>
+                        <li>Zero latency</li>
+                        <li>Always in sync</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure & Reliable</h3>
+                    <p>
+                        Enterprise-grade security with JWT authentication, encrypted connections,
+                        and regular backups of your project data.
+                    </p>
+                    <ul class="feature-list">
+                        <li>JWT authentication</li>
+                        <li>Encrypted data</li>
+                        <li>99.9% SLA</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Project Analytics</h3>
+                    <p>
+                        Track project health with real-time statistics. Monitor open tasks,
+                        team activity, and project progress at a glance.
+                    </p>
+                    <ul class="feature-list">
+                        <li>Real-time stats</li>
+                        <li>Progress tracking</li>
+                        <li>Team insights</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>Get started in minutes</p>
+            </div>
+
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Sign Up</h3>
+                    <p>Create your free account in seconds</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Create Project</h3>
+                    <p>Set up your first project</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Invite Team</h3>
+                    <p>Add collaborators by email</p>
+                </div>
+                <div class="step-arrow">→</div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Start Building</h3>
+                    <p>Collaborate in real-time</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Simple, Transparent Pricing</h2>
+                <p>Choose the plan that fits your team</p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">Free</div>
+                    <div class="plan-price">
+                        <span class="currency">$</span>
+                        <span class="amount">0</span>
+                    </div>
+                    <p class="plan-description">Perfect for getting started</p>
+
+                    <ul class="plan-features">
+                        <li>✓ Up to 2 projects</li>
+                        <li>✓ Up to 3 collaborators</li>
+                        <li>✓ Task board & discussions</li>
+                        <li>✗ Premium features</li>
+                        <li>✗ Priority support</li>
+                    </ul>
+
+                    <a href="login.html" class="btn-secondary btn-full">Get Started</a>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="pricing-card featured">
+                    <div class="badge">Most Popular</div>
+                    <div class="plan-name">Premium</div>
+                    <div class="plan-price">
+                        <span class="currency">$</span>
+                        <span class="amount">9</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <p class="plan-description">For growing teams</p>
+
+                    <ul class="plan-features">
+                        <li>✓ Unlimited projects</li>
+                        <li>✓ Unlimited collaborators</li>
+                        <li>✓ Advanced analytics</li>
+                        <li>✓ API access</li>
+                        <li>✓ Priority support</li>
+                    </ul>
+
+                    <a href="login.html" class="btn-primary btn-full">Upgrade Now</a>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">Enterprise</div>
+                    <div class="plan-price">
+                        <span class="currency">$</span>
+                        <span class="amount">Custom</span>
+                    </div>
+                    <p class="plan-description">For large organizations</p>
+
+                    <ul class="plan-features">
+                        <li>✓ Everything in Premium</li>
+                        <li>✓ Dedicated support</li>
+                        <li>✓ SSO/SAML</li>
+                        <li>✓ Custom integrations</li>
+                        <li>✓ SLA guarantee</li>
+                    </ul>
+
+                    <a href="#contact" class="btn-secondary btn-full">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2>Ready to collaborate better?</h2>
+            <p>Start your free trial today. No credit card required.</p>
+            <a href="login.html" class="btn-primary btn-lg pulse">Get Started Free</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>DevCollab</h4>
+                <p>Real-time developer collaboration platform</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">GitHub</a>
+                    <a href="#" class="social-link">LinkedIn</a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h4>Product</h4>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="login.html">Sign In</a>
+                <a href="login.html">Get Started</a>
+            </div>
+
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <a href="#">Docs</a>
+                <a href="#">Blog</a>
+                <a href="#">Community</a>
+                <a href="#">Support</a>
+            </div>
+
+            <div class="footer-section">
+                <h4>Legal</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookie Policy</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 DevCollab. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/landing.js"></script>
+</body>
+
+</html>
