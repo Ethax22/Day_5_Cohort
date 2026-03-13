@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Workspace - DevCollab</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/board.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <a href="dashboard.html" class="back-btn">← Dashboard</a>
+                <h1 id="projectTitle" class="project-name">Project Name</h1>
+            </div>
+            <div class="navbar-right">
+                <div class="user-profile">
+                    <img id="userAvatar" src="public/default-avatar.svg" alt="User avatar" class="avatar">
+                    <span id="userName" class="user-name">User</span>
+                    <button id="logoutBtn" class="btn-logout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="workspace-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Project Menu</h3>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="board">
+                    <span class="nav-icon">📋</span>
+                    <span>Task Board</span>
+                </button>
+                <button class="nav-item" data-tab="chat">
+                    <span class="nav-icon">💬</span>
+                    <span>Discussions</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="project-info">
+                    <p class="info-label">Active Collaborators</p>
+                    <div id="activeUsers" class="active-users">
+                        <!-- Active users will be added here -->
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Task Board Tab -->
+            <section id="board" class="tab-content active">
+                <div class="board-header">
+                    <h2>Task Board</h2>
+                    <div class="board-actions">
+                        <button id="addTaskBtn" class="btn-primary btn-sm">+ Add Task</button>
+                        <button id="filterBtn" class="btn-secondary btn-sm">Filter</button>
+                    </div>
+                </div>
+
+                <!-- Kanban Board -->
+                <div class="kanban-board">
+                    <!-- To Do Column -->
+                    <div class="kanban-column" data-status="todo">
+                        <div class="column-header">
+                            <h3>📝 To Do</h3>
+                            <span class="task-count" data-count="0">0</span>
+                        </div>
+                        <div class="tasks-container" data-status="todo">
+                            <!-- Task cards will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- In Progress Column -->
+                    <div class="kanban-column" data-status="in-progress">
+                        <div class="column-header">
+                            <h3>🚀 In Progress</h3>
+                            <span class="task-count" data-count="0">0</span>
+                        </div>
+                        <div class="tasks-container" data-status="in-progress">
+                            <!-- Task cards will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Review Column -->
+                    <div class="kanban-column" data-status="review">
+                        <div class="column-header">
+                            <h3>👀 Review</h3>
+                            <span class="task-count" data-count="0">0</span>
+                        </div>
+                        <div class="tasks-container" data-status="review">
+                            <!-- Task cards will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Done Column -->
+                    <div class="kanban-column" data-status="done">
+                        <div class="column-header">
+                            <h3>✅ Done</h3>
+                            <span class="task-count" data-count="0">0</span>
+                        </div>
+                        <div class="tasks-container" data-status="done">
+                            <!-- Task cards will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Discussions/Chat Tab -->
+            <section id="chat" class="tab-content">
+                <div class="chat-header">
+                    <h2>Code Discussions</h2>
+                    <button id="onlineUsersBtn" class="btn-secondary btn-sm">Online Users</button>
+                </div>
+
+                <div class="chat-container">
+                    <!-- Chat Messages -->
+                    <div id="messagesContainer" class="messages-container">
+                        <!-- Messages will be appended here -->
+                    </div>
+
+                    <!-- Chat Input -->
+                    <div class="chat-input-area">
+                        <form id="chatForm" class="chat-form">
+                            <textarea
+                                id="messageInput"
+                                class="message-input"
+                                placeholder="Share ideas, code snippets, or questions..."
+                                rows="3"
+                            ></textarea>
+                            <div class="chat-form-actions">
+                                <button type="button" id="codeSnippetBtn" class="btn-secondary btn-sm">
+                                    Code
+                                </button>
+                                <button type="submit" class="btn-primary btn-sm">Send</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Code Snippet Modal -->
+                <div id="codeSnippetModal" class="modal hidden">
+                    <div class="modal-overlay" id="snippetOverlay"></div>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Insert Code Snippet</h3>
+                            <button id="closeSnippetModal" class="btn-close">&times;</button>
+                        </div>
+                        <form id="codeSnippetForm" class="modal-form">
+                            <div class="form-group">
+                                <label for="codeLanguage">Language</label>
+                                <select id="codeLanguage" name="language">
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                    <option value="sql">SQL</option>
+                                    <option value="json">JSON</option>
+                                    <option value="bash">Bash</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="codeContent">Code</label>
+                                <textarea
+                                    id="codeContent"
+                                    name="code"
+                                    placeholder="Paste your code here"
+                                    rows="10"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" id="cancelSnippetBtn" class="btn-secondary">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn-primary">Insert Snippet</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Tab -->
+            <section id="settings" class="tab-content">
+                <div class="settings-header">
+                    <h2>Project Settings</h2>
+                </div>
+
+                <div class="settings-container">
+                    <!-- Project Details -->
+                    <div class="settings-section">
+                        <h3>Project Details</h3>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="settingsProjectName">Project Name</label>
+                                <input type="text" id="settingsProjectName" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="settingsDescription">Description</label>
+                                <textarea id="settingsDescription" rows="4"></textarea>
+                            </div>
+                            <button type="button" class="btn-primary btn-sm">Save Changes</button>
+                        </div>
+                    </div>
+
+                    <!-- Collaborators Management -->
+                    <div class="settings-section">
+                        <h3>Collaborators</h3>
+
+                        <!-- Add Collaborator -->
+                        <div class="add-collaborator">
+                            <div class="form-group">
+                                <label for="collaboratorEmail">Add Collaborator by Email</label>
+                                <div class="input-with-button">
+                                    <input
+                                        type="email"
+                                        id="collaboratorEmail"
+                                        placeholder="collaborator@email.com"
+                                    />
+                                    <button type="button" id="addCollaboratorBtn" class="btn-primary btn-sm">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Collaborators List -->
+                        <div class="collaborators-list">
+                            <h4>Team Members</h4>
+                            <div id="collaboratorsList" class="list">
+                                <!-- Collaborators will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="settings-section danger-zone">
+                        <h3>Danger Zone</h3>
+                        <p>These actions are permanent and cannot be undone.</p>
+                        <button type="button" id="deleteProjectBtn" class="btn-danger">
+                            Delete Project
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Task Card Template -->
+    <template id="taskCardTemplate">
+        <div class="task-card" draggable="true">
+            <div class="task-header">
+                <h4 class="task-title"></h4>
+                <button class="task-menu-btn">⋮</button>
+            </div>
+            <p class="task-description"></p>
+            <div class="task-footer">
+                <div class="task-assignee">
+                    <img class="assignee-avatar" src="" alt="Assignee" />
+                    <span class="assignee-name"></span>
+                </div>
+                <span class="task-priority"></span>
+            </div>
+        </div>
+    </template>
+
+    <!-- Message Template -->
+    <template id="messageTemplate">
+        <div class="message">
+            <div class="message-avatar">
+                <img src="" alt="User" />
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="message-author"></span>
+                    <span class="message-time"></span>
+                </div>
+                <div class="message-body"></div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Collaborator Item Template -->
+    <template id="collaboratorTemplate">
+        <div class="collaborator-item">
+            <div class="collaborator-info">
+                <img class="collaborator-avatar" src="" alt="User" />
+                <div class="collaborator-details">
+                    <p class="collaborator-name"></p>
+                    <p class="collaborator-email"></p>
+                </div>
+            </div>
+            <button class="remove-collaborator-btn" data-user-id="">Remove</button>
+        </div>
+    </template>
+
+    <!-- JavaScript Files -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/socket.js"></script>
+    <script src="js/board.js"></script>
+</body>
+</html>
