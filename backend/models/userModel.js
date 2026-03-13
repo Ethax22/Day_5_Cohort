@@ -1,7 +1,6 @@
 const db = require('../config/db');
 
 class User {
-  // Create the Users table if it doesn't exist
   static async createTable() {
     const query = `
       CREATE TABLE IF NOT EXISTS Users (
@@ -16,19 +15,16 @@ class User {
     await db.execute(query);
   }
 
-  // Find a user by their email address
   static async findByEmail(email) {
     const [rows] = await db.execute('SELECT * FROM Users WHERE email = ?', [email]);
     return rows[0];
   }
 
-  // Find a user by their ID
   static async findById(id) {
     const [rows] = await db.execute('SELECT * FROM Users WHERE id = ?', [id]);
     return rows[0];
   }
 
-  // Create a new user
   static async create(name, email, passwordHash) {
     const query = 'INSERT INTO Users (name, email, password_hash) VALUES (?, ?, ?)';
     const [result] = await db.execute(query, [name, email, passwordHash]);
@@ -36,7 +32,6 @@ class User {
   }
 }
 
-// Initialize the table when this model is loaded
 User.createTable().catch(console.error);
 
 module.exports = User;
