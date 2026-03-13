@@ -8,7 +8,7 @@ This platform follows a modern client-server architecture with real-time capabil
 *   **Frontend:** HTML, CSS (Vanilla for flexibility/customization), JavaScript (Vanilla or lightweight rendering wrapper).
 *   **Backend:** Node.js with Express.js (High performance for I/O bound tasks and excellent WebSocket support).
 *   **Real-time Engine:** Socket.io (Simplifies WebSocket connections for real-time code discussions and task board updates).
-*   **Database:** MongoDB (via Mongoose). A NoSQL database provides flexibility for dynamic task boards and chat logs.
+*   **Database:** MySQL. A relational database ensures structured data integrity for users, projects, tasks, and relationships.
 *   **Payment Gateway:** Razorpay API for handling premium plan subscriptions.
 *   **Authentication:** JSON Web Tokens (JWT) for stateless, scalable user sessions.
 
@@ -16,55 +16,59 @@ This platform follows a modern client-server architecture with real-time capabil
 1.  **Client (Browser):** Handles the UI, interacts with the user, communicates with REST APIs for standard CRUD operations, and maintains a persistent WebSocket connection for real-time features.
 2.  **API Server (Node/Express):** Handles routing, business logic, authenticates users (JWT), interacts with the database, and processes payments via Razorpay.
 3.  **WebSocket Server (Socket.io):** Integrated with the Node API server to push live updates to connected clients (chat messages, task movements).
-4.  **Database Server (MongoDB):** Stores all persistent data (Users, Projects, Tasks, Messages).
+4.  **Database Server (MySQL):** Stores all persistent data (Users, Projects, Tasks, Messages).
 
 ---
 
-## 2. Database Design Draft (MongoDB)
+## 2. Database Design Draft (MySQL)
 
-Since we are using MongoDB, here is the schema draft based on collections.
+Since we are using MySQL, here is the schema draft based on relational tables.
 
-### 2.1 `Users` Collection
-*   `_id`: ObjectId
-*   `name`: String
-*   `email`: String (Unique)
-*   `passwordHash`: String
-*   `plan`: String (Enum: 'free', 'premium') - Default: 'free'
-*   `createdAt`: Timestamp
+### 2.1 `Users` Table
+*   `id`: INT AUTO_INCREMENT PRIMARY KEY
+*   `name`: VARCHAR(255)
+*   `email`: VARCHAR(255) UNIQUE
+*   `password_hash`: VARCHAR(255)
+*   `plan`: ENUM('free', 'premium') DEFAULT 'free'
+*   `created_at`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
-### 2.2 `Projects` Collection
-*   `_id`: ObjectId
-*   `name`: String
-*   `description`: String
-*   `ownerId`: ObjectId (Ref: Users)
-*   `collaborators`: Array of ObjectIds (Ref: Users)
-*   `createdAt`: Timestamp
+### 2.2 `Projects` Table
+*   `id`: INT AUTO_INCREMENT PRIMARY KEY
+*   `name`: VARCHAR(255)
+*   `description`: TEXT
+*   `owner_id`: INT (FOREIGN KEY REFERENCES Users(id))
+*   `created_at`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
-### 2.3 `Tasks` Collection
-*   `_id`: ObjectId
-*   `projectId`: ObjectId (Ref: Projects)
-*   `title`: String
-*   `description`: String
-*   `status`: String (Enum: 'todo', 'in-progress', 'review', 'done')
-*   `assigneeId`: ObjectId (Ref: Users) - nullable
-*   `createdAt`: Timestamp
-*   `updatedAt`: Timestamp
+### 2.3 `Project_Collaborators` Table (Many-to-Many)
+*   `project_id`: INT (FOREIGN KEY REFERENCES Projects(id))
+*   `user_id`: INT (FOREIGN KEY REFERENCES Users(id))
+*   PRIMARY KEY (`project_id`, `user_id`)
 
-### 2.4 `Messages` (Code Discussions) Collection
-*   `_id`: ObjectId
-*   `projectId`: ObjectId (Ref: Projects)
-*   `senderId`: ObjectId (Ref: Users)
-*   `content`: String (Text / Markdown / Code Snippets)
-*   `timestamp`: Timestamp
+### 2.4 `Tasks` Table
+*   `id`: INT AUTO_INCREMENT PRIMARY KEY
+*   `project_id`: INT (FOREIGN KEY REFERENCES Projects(id))
+*   `title`: VARCHAR(255)
+*   `description`: TEXT
+*   `status`: ENUM('todo', 'in-progress', 'review', 'done') DEFAULT 'todo'
+*   `assignee_id`: INT NULL (FOREIGN KEY REFERENCES Users(id))
+*   `created_at`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+*   `updated_at`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
-### 2.5 `Transactions` (Premium Plans) Collection
-*   `_id`: ObjectId
-*   `userId`: ObjectId (Ref: Users)
-*   `razorpayOrderId`: String
-*   `razorpayPaymentId`: String
-*   `amount`: Number
-*   `status`: String (Enum: 'created', 'successful', 'failed')
-*   `createdAt`: Timestamp
+### 2.5 `Messages` (Code Discussions) Table
+*   `id`: INT AUTO_INCREMENT PRIMARY KEY
+*   `project_id`: INT (FOREIGN KEY REFERENCES Projects(id))
+*   `sender_id`: INT (FOREIGN KEY REFERENCES Users(id))
+*   `content`: TEXT (Text / Markdown / Code Snippets)
+*   `created_at`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+### 2.6 `Transactions` (Premium Plans) Table
+*   `id`: INT AUTO_INCREMENT PRIMARY KEY
+*   `user_id`: INT (FOREIGN KEY REFERENCES Users(id))
+*   `razorpay_order_id`: VARCHAR(255)
+*   `razorpay_payment_id`: VARCHAR(255)
+*   `amount`: DECIMAL(10, 2)
+*   `status`: ENUM('created', 'successful', 'failed')
+*   `created_at`: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
 ---
 
@@ -73,7 +77,7 @@ Since we are using MongoDB, here is the schema draft based on collections.
 The development will be executed in phases to ensure a structured build-up of features.
 
 ### Phase 1: Foundation & Authentication (Week 1)
-*   Initialize Node.js/Express backend and setup MongoDB connection.
+*   Initialize Node.js/Express backend and setup MySQL connection (e.g., via Sequelize).
 *   Set up basic HTML/CSS/JS scaffolding for the frontend interface.
 *   Implement User registration, login, and JWT generation/validation.
 *   *Milestone:* A user can successfully sign up, log in, and receive a JWT token.
@@ -167,7 +171,7 @@ Here is the proposed folder structure separating Frontend and Backend for clarit
 ├── /backend                 # Node.js / Express Server
 │   ├── /config              # Env vars, database connection config, Razorpay config
 │   ├── /controllers         # Route logic (authController, projectController, etc.)
-│   ├── /models              # Mongoose Schemas (User, Project, Task, Message)
+│   ├── /models              # MySQL Models (User, Project, Task, Message, Collaborators)
 │   ├── /routes              # Express API Routes (/api/auth, /api/projects)
 │   ├── /middleware          # JWT verification, error handling
 │   ├── /services            # Business logic, Socket.io event handlers setup
